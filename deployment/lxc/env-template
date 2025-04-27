@@ -1,0 +1,98 @@
+# ==============================================================================
+
+# JB Filetools – LXC Deployment Environment Configuration
+
+# This file will be copied to `lxc/env` the first time a user runs install.sh
+
+# ==============================================================================
+
+# -----------------------
+
+# Container Configuration
+
+# -----------------------
+
+# Proxmox container ID (must be unique on your node)
+
+CT_ID=120
+
+# Hostname inside container
+
+CT_HOSTNAME=jb-filetools
+
+# Storage location
+
+CT_STORAGE=local-lvm:8
+
+# CPU and RAM limits
+
+CORES=2
+RAM=2048
+
+# -----------------------
+
+# Network Configuration
+
+# -----------------------
+
+# First NIC: connects to your main LAN
+
+BRIDGE0=vmbr0
+CT_IP0=192.168.1.95/24
+GATEWAY=192.168.1.1
+
+# Second NIC: 10GbE VLAN or storage access
+
+BRIDGE1=vmbr2
+CT_IP1=192.168.20.10/24
+MTU1=1500
+
+# -----------------------
+
+# Storage and Mount Points
+
+# -----------------------
+
+# On the Proxmox host
+
+HOST_MOUNT_SRC=/mnt/Truenas/Media/transmission
+HOST_MOUNT_DEST=/mnt/Truenas/Media
+
+# Inside the container
+
+MOUNT_MEDIA_SRC=/mnt/transmission
+MOUNT_MEDIA_DEST=/mnt/media
+
+# -----------------------
+
+# Application Installation
+
+# -----------------------
+
+# Path where the app will be cloned and installed
+
+APP_PATH=/opt/jb-filetools
+VENV_PATH=/opt/jb-filetools/venv
+
+# LXC image template to use (must be available locally or downloadable)
+
+TEMPLATE=local:vztmpl/ubuntu-24.04-standard_24.04-2_amd64.tar.zst
+
+# -----------------------
+
+# Container Root Login
+
+# -----------------------
+
+# Root password for the container (please change!)
+
+ROOT_PASSWORD=changeme
+
+# -----------------------
+
+# App Version Metadata (set by CI)
+
+# -----------------------
+
+FILETOOLS_VERSION=0.1.0
+PYTHON_VERSION=3.12

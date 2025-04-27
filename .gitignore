@@ -1,0 +1,32 @@
+
+---
+
+### `.gitignore`
+
+```text
+# Python artifacts
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+# Editor/IDE junk
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment files
+.env
+*.env
+
+# Build artifacts
+dist/
+build/
+*.tar.gz
+
+# LXC/Docker generated files
+lxc/env
+docker/env
+staging/
+lxc-deploy.tar.gz
