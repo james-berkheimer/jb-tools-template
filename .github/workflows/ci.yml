@@ -24,14 +24,14 @@ jobs:
           cp deployment/lxc/create.sh staging/jb-tools-lxc/
           cp deployment/lxc/env-template staging/jb-tools-lxc/
           cp -r deployment/lxc/templates staging/jb-tools-lxc/
-          tar -czf deployment/packages/jb-tools-lxc.tar.gz -C staging jb-tools-lxc
+          tar --owner=0 --group=0 -czf deployment/packages/jb-tools-lxc.tar.gz -C staging jb-tools-lxc
 
       - name: Package Docker Deployment (future)
         run: |
           mkdir -p staging/jb-tools-docker
           if [ -d deployment/docker ] && [ "$(ls -A deployment/docker)" ]; then
             cp -r deployment/docker/* staging/jb-tools-docker/
-            tar -czf deployment/packages/jb-tools-docker.tar.gz -C staging jb-tools-docker
+            tar --owner=0 --group=0 -czf deployment/packages/jb-tools-docker.tar.gz -C staging jb-tools-docker
           else
             echo "Docker folder empty or missing, skipping docker packaging."
           fi
