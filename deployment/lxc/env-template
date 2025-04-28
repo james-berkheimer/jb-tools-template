@@ -8,6 +8,8 @@ CT_ID=100
 CT_HOSTNAME=jb-tools
 CT_STORAGE=local-lvm
 TEMPLATE=ubuntu-22.04-standard_22.04-1_amd64.tar.zst
+CORES=2
+RAM=2048
 
 # ==============================================================================
 
