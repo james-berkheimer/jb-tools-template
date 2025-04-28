@@ -1,0 +1,78 @@
+############## ~/.bashrc ##############
+[ -z "$PS1" ] && return
+
+# History control
+HISTCONTROL=ignoredups:ignorespace
+HISTSIZE=1000
+HISTFILESIZE=2000
+shopt -s histappend
+shopt -s checkwinsize
+
+# Lesspipe support
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# Color prompt
+if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+force_color_prompt=yes
+if [ -n "$force_color_prompt" ]; then
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+        color_prompt=yes
+    else
+        color_prompt=
+    fi
+fi
+
+if [ "$color_prompt" = yes ]; then
+    PS1='${debian_chroot:+($debian_chroot)}\[\e[1;32m\]\u@\h:\w\[\e[0m\]\\$ '
+else
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\\$ '
+fi
+unset color_prompt force_color_prompt
+
+# Terminal title
+case "$TERM" in
+    xterm*|rxvt*)
+        PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+        ;;
+esac
+
+# Color ls output
+if [ -x /usr/bin/dircolors ]; then
+    if [ -r ~/.dircolors ]; then
+        eval "$(dircolors -b ~/.dircolors)"
+    else
+        eval "$(dircolors -b)"
+    fi
+fi
+
+# Load bash aliases if available
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+# Grep highlight
+export GREP_COLOR='1;32'
+
+############## ~/.bash_aliases ##############
+
+# Navigation
+alias ..="cd .."
+alias ...="cd ../.."
+
+# Listings
+alias ls="ls --color=auto"
+alias ll="ls -alF"
+alias la="ls -A"
+alias l="ls -CF"
+
+# Search
+alias grep="grep --color=auto"
+alias fgrep="fgrep --color=auto"
+alias egrep="egrep --color=auto"
+
+# Utilities
+alias cls="clear"
+alias sbash="source ~/.bashrc"

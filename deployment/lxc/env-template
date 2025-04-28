@@ -1,98 +1,67 @@
 # ==============================================================================
 
-# JB Filetools – LXC Deployment Environment Configuration
-
-# This file will be copied to `lxc/env` the first time a user runs install.sh
+# Container Settings
 
 # ==============================================================================
 
-# -----------------------
+CT_ID=100
+CT_HOSTNAME=jb-tools
+CT_STORAGE=local-lvm
+TEMPLATE=ubuntu-22.04-standard_22.04-1_amd64.tar.zst
 
-# Container Configuration
+# ==============================================================================
 
-# -----------------------
+# Networking Settings
 
-# Proxmox container ID (must be unique on your node)
-
-CT_ID=120
-
-# Hostname inside container
-
-CT_HOSTNAME=jb-filetools
-
-# Storage location
-
-CT_STORAGE=local-lvm:8
-
-# CPU and RAM limits
-
-CORES=2
-RAM=2048
-
-# -----------------------
-
-# Network Configuration
-
-# -----------------------
-
-# First NIC: connects to your main LAN
+# ==============================================================================
 
 BRIDGE0=vmbr0
-CT_IP0=192.168.1.95/24
+BRIDGE1=vmbr1
+CT_IP0=192.168.1.100/24
+CT_IP1=10.10.10.100/24
 GATEWAY=192.168.1.1
+MTU1=9000
 
-# Second NIC: 10GbE VLAN or storage access
+# ==============================================================================
 
-BRIDGE1=vmbr2
-CT_IP1=192.168.20.10/24
-MTU1=1500
+# Mount Points
 
-# -----------------------
+# ==============================================================================
 
-# Storage and Mount Points
-
-# -----------------------
-
-# On the Proxmox host
-
-HOST_MOUNT_SRC=/mnt/Truenas/Media/transmission
-HOST_MOUNT_DEST=/mnt/Truenas/Media
-
-# Inside the container
-
+HOST_MOUNT_SRC=/mnt/media/transmission
 MOUNT_MEDIA_SRC=/mnt/transmission
+
+HOST_MOUNT_DEST=/mnt/media
 MOUNT_MEDIA_DEST=/mnt/media
 
-# -----------------------
+HOST_STORAGE=/mnt/Truenas/Storage
+MOUNT_STORAGE=/mnt/storage
 
-# Application Installation
+# ==============================================================================
 
-# -----------------------
+# System Settings
 
-# Path where the app will be cloned and installed
+# ==============================================================================
 
-APP_PATH=/opt/jb-filetools
-VENV_PATH=/opt/jb-filetools/venv
-
-# LXC image template to use (must be available locally or downloadable)
-
-TEMPLATE=local:vztmpl/ubuntu-24.04-standard_24.04-2_amd64.tar.zst
-
-# -----------------------
-
-# Container Root Login
-
-# -----------------------
-
-# Root password for the container (please change!)
-
+PYTHON_VERSION=3.12
 ROOT_PASSWORD=changeme
 
-# -----------------------
+# ==============================================================================
 
-# App Version Metadata (set by CI)
+# Template Directory
 
-# -----------------------
+# ==============================================================================
 
-FILETOOLS_VERSION=0.1.0
-PYTHON_VERSION=3.12
+TEMPLATE_DIR=./templates
+
+# ==============================================================================
+
+# Mounts Array
+
+# ==============================================================================
+
+MOUNTS=(
+"$HOST_MOUNT_SRC:$MOUNT_MEDIA_SRC"
+"$HOST_MOUNT_DEST:$MOUNT_MEDIA_DEST"
+"$HOST_STORAGE:$MOUNT_STORAGE"
+)

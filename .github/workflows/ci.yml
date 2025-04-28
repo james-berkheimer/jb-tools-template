@@ -1,0 +1,89 @@
+name: Build and Release Deployment Packages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  package-deployments:
+    name: Package Deployments
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Package LXC Deployment
+        run: |
+          mkdir -p deployment/packages
+          mkdir -p staging/jb-tools-lxc
+          cp deployment/lxc/create.sh staging/jb-tools-lxc/
+          cp deployment/lxc/env-template staging/jb-tools-lxc/
+          cp -r deployment/lxc/templates staging/jb-tools-lxc/
+          tar -czf deployment/packages/jb-tools-lxc.tar.gz -C staging jb-tools-lxc
+
+      - name: Package Docker Deployment (future)
+        run: |
+          mkdir -p staging/jb-tools-docker
+          if [ -d deployment/docker ] && [ "$(ls -A deployment/docker)" ]; then
+            cp -r deployment/docker/* staging/jb-tools-docker/
+            tar -czf deployment/packages/jb-tools-docker.tar.gz -C staging jb-tools-docker
+          else
+            echo "Docker folder empty or missing, skipping docker packaging."
+          fi
+
+      - name: Upload LXC Deployment Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jb-tools-lxc
+          path: deployment/packages/jb-tools-lxc.tar.gz
+
+      - name: Upload Docker Deployment Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jb-tools-docker
+          path: deployment/packages/jb-tools-docker.tar.gz
+          if-no-files-found: ignore
+
+  release:
+    name: Release Packages
+    runs-on: ubuntu-latest
+    needs: package-deployments
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download LXC Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jb-tools-lxc
+          path: .
+
+      - name: Download Docker Artifact (optional)
+        uses: actions/download-artifact@v4
+        with:
+          name: jb-tools-docker
+          path: .
+        continue-on-error: true
+
+      - name: Install GitHub CLI
+        run: |
+          sudo apt update
+          sudo apt install -y gh
+
+      - name: Create GitHub Release if missing
+        run: |
+          gh release view latest >/dev/null 2>&1 || \
+          gh release create latest --title "Latest Deployment" --notes "Packaged LXC and Docker deployment bundles."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Packages to Release
+        run: |
+          gh release upload latest deployment/packages/jb-tools-lxc.tar.gz --clobber
+          gh release upload latest deployment/packages/jb-tools-docker.tar.gz --clobber || echo "No docker package to upload."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
