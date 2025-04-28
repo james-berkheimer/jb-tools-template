@@ -65,6 +65,11 @@ jobs:
           name: jb-tools-lxc
           path: .
 
+      - name: Move LXC Artifact into packages directory
+        run: |
+          mkdir -p deployment/packages
+          mv jb-tools-lxc.tar.gz deployment/packages/
+
       - name: Download Docker Artifact (optional)
         uses: actions/download-artifact@v4
         with:
