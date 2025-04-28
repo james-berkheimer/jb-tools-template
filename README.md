@@ -1,19 +1,36 @@
-# JB Tools Template
+## LXC Deployment Instructions
 
-Template for building lightweight LXC and Docker containers designed to run Python utility applications.
+1. **Download and extract the latest deployment bundle:**
 
-## Structure
+   ```bash
+   curl -L https://github.com/james-berkheimer/jb-tools-template/releases/latest/download/jb-tools-lxc.tar.gz | tar xz
+   cd jb-tools-lxc
+   ```
 
-- `lxc/` — Scripts and environment template for creating LXC containers.
-- `docker/` — Dockerfile and scripts for building Docker containers (coming soon).
-- `common/` — Shared helper scripts (optional for future use).
+2. **Make sure scripts are executable:**
 
-## Quick Start (LXC)
+   ```bash
+   chmod +x create.sh
+   ```
 
-1. Copy `lxc/env-template` to `lxc/env` and edit your environment settings.
-2. Run the LXC create script:
+3. **Copy and edit the environment configuration:**
 
-```bash
-cd lxc
-sudo ./create.sh
-```
+   ```bash
+   cp env-template env
+   nano env
+   ```
+
+   Set your desired container ID, IP addresses, password, etc.
+
+4. **Create the container:**
+
+   ```bash
+   sudo ./create.sh
+   ```
+
+   This will automatically:
+
+   - Create the LXC container
+   - Configure networking
+   - Install Python and SSH
+   - Set up a clean working environment
