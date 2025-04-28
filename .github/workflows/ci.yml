@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
   package-deployments:
     name: Package Deployments
@@ -44,7 +47,7 @@ jobs:
         with:
           name: jb-tools-docker
           path: deployment/packages/jb-tools-docker.tar.gz
-          if-no-files-found: ignore
+        continue-on-error: true
 
   release:
     name: Release Packages
