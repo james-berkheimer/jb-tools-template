@@ -95,7 +95,9 @@ echo "=== Setting up system defaults ==="
 pct exec $CT_ID -- bash -c "chmod -x /etc/update-motd.d/*"
 
 if [ -f "$TEMPLATE_DIR/motd-template" ]; then
-  pct exec $CT_ID -- bash -c "cat $TEMPLATE_DIR/motd-template > /etc/motd"
+  echo "=== Copying and setting custom MOTD ==="
+  pct push $CT_ID "$TEMPLATE_DIR/motd-template" /tmp/motd-template
+  pct exec $CT_ID -- bash -c "cat /tmp/motd-template > /etc/motd"
 else
   echo "Warning: motd-template not found. Skipping custom MOTD."
 fi
