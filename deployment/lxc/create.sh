@@ -124,13 +124,15 @@ pct exec $CT_ID -- chmod 644 /root/.bashrc /root/.bash_aliases
 
 echo "=== Adding persistent dynamic tools list ==="
 pct exec $CT_ID -- bash -c '
-cat > /etc/profile.d/jb-tools.sh << "EOF"
+cat > /etc/profile.d/jb-tools.sh << EOF
 #!/bin/bash
 # Display installed JB tools after MOTD on SSH login
 
 if [ -n "\$SSH_TTY" ]; then
   TOOLS=\$(ls /opt | tr "\n" " " | sed "s/ \$//")
-  echo -e "\nInstalled tools: \$TOOLS\n"
+  if [ -n "\$TOOLS" ]; then
+    echo -e "\nInstalled tools: \$TOOLS\n"
+  fi
 fi
 EOF
 chmod +x /etc/profile.d/jb-tools.sh
