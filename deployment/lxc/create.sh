@@ -97,7 +97,11 @@ pct exec $CT_ID -- bash -c "chmod -x /etc/update-motd.d/*"
 echo "=== Setting up custom MOTD ==="
 if [ -f "$TEMPLATE_DIR/motd-template" ]; then
   pct push $CT_ID "$TEMPLATE_DIR/motd-template" /tmp/motd-template
-  pct exec $CT_ID -- bash -c "cat /tmp/motd-template > /etc/motd"
+  pct exec $CT_ID -- bash -c '
+    TOOLS=$(ls /opt | tr "\n" " " | sed "s/ \$//")
+    sed "s/__TOOL_LIST__/$TOOLS/" /tmp/motd-template > /etc/motd
+  '
+
 else
   echo "Warning: motd-template not found. Skipping custom MOTD."
 fi
@@ -117,6 +121,21 @@ fi
 
 pct exec $CT_ID -- chown root:root /root/.bashrc /root/.bash_aliases
 pct exec $CT_ID -- chmod 644 /root/.bashrc /root/.bash_aliases
+
+echo "=== Adding persistent dynamic tools list ==="
+pct exec $CT_ID -- bash -c '
+cat > /etc/profile.d/jb-tools.sh << "EOF"
+#!/bin/bash
+# Display installed JB tools after MOTD on SSH login
+
+if [ -n "\$SSH_TTY" ]; then
+  TOOLS=\$(ls /opt | tr "\n" " " | sed "s/ \$//")
+  echo -e "\nInstalled tools: \$TOOLS\n"
+fi
+EOF
+chmod +x /etc/profile.d/jb-tools.sh
+'
+
 
 echo "=== Container $CT_ID created and configured ==="
 echo "➡ Connect: ssh root@${CT_IP0%%/*}"
