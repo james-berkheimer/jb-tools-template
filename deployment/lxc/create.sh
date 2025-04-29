@@ -94,26 +94,29 @@ pct exec $CT_ID -- bash -c "echo root:$ROOT_PASSWORD | chpasswd"
 echo "=== Setting up system defaults ==="
 pct exec $CT_ID -- bash -c "chmod -x /etc/update-motd.d/*"
 
+echo "=== Setting up custom MOTD ==="
 if [ -f "$TEMPLATE_DIR/motd-template" ]; then
-  echo "=== Copying and setting custom MOTD ==="
   pct push $CT_ID "$TEMPLATE_DIR/motd-template" /tmp/motd-template
   pct exec $CT_ID -- bash -c "cat /tmp/motd-template > /etc/motd"
 else
   echo "Warning: motd-template not found. Skipping custom MOTD."
 fi
 
-if [ -f "$TEMPLATE_DIR/bash_template" ]; then
-  echo "=== Setting up bashrc and bash_aliases from bash_template ==="
-  awk '/^############## ~\/\.bashrc ##############/{flag=1; next} /^############## ~\/\.bash_aliases ##############/{flag=0} flag' "$TEMPLATE_DIR/bash_template" | pct exec $CT_ID -- bash -c "cat > /root/.bashrc"
-
-  awk '/^############## ~\/\.bash_aliases ##############/{flag=1; next} flag' "$TEMPLATE_DIR/bash_template" | pct exec $CT_ID -- bash -c "cat > /root/.bash_aliases"
-
-  echo "=== Securing bash configuration files ==="
-  pct exec $CT_ID -- chown root:root /root/.bashrc /root/.bash_aliases
-  pct exec $CT_ID -- chmod 644 /root/.bashrc /root/.bash_aliases
+echo "=== Setting up bash configuration ==="
+if [ -f "$TEMPLATE_DIR/bashrc-template" ]; then
+  pct push $CT_ID "$TEMPLATE_DIR/bashrc-template" /root/.bashrc
 else
-  echo "Warning: bash_template not found. Skipping bash configuration."
+  echo "Warning: bashrc-template not found. Skipping .bashrc setup."
 fi
+
+if [ -f "$TEMPLATE_DIR/bash_aliases-template" ]; then
+  pct push $CT_ID "$TEMPLATE_DIR/bash_aliases-template" /root/.bash_aliases
+else
+  echo "Warning: bash_aliases-template not found. Skipping .bash_aliases setup."
+fi
+
+pct exec $CT_ID -- chown root:root /root/.bashrc /root/.bash_aliases
+pct exec $CT_ID -- chmod 644 /root/.bashrc /root/.bash_aliases
 
 echo "=== Container $CT_ID created and configured ==="
 echo "➡ Connect: ssh root@${CT_IP0%%/*}"

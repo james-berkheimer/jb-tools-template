@@ -1,0 +1,20 @@
+############## ~/.bash_aliases ##############
+
+# Navigation
+alias ..="cd .."
+alias ...="cd ../.."
+
+# Listings
+alias ls="ls --color=auto"
+alias ll="ls -alF"
+alias la="ls -A"
+alias l="ls -CF"
+
+# Search
+alias grep="grep --color=auto"
+alias fgrep="fgrep --color=auto"
+alias egrep="egrep --color=auto"
+
+# Utilities
+alias cls="clear"
+alias sbash="source ~/.bashrc"
