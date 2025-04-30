@@ -1,71 +1,67 @@
 # ==============================================================================
 
-# Container Settings
+# JB Tools – LXC Deployment Environment Configuration
 
 # ==============================================================================
+
+# -----------------------
+
+# Container Configuration
+
+# -----------------------
 
 CT_ID=200
 CT_HOSTNAME=jb-tools
 CT_STORAGE=local-lvm:8
-TEMPLATE=local:vztmpl/ubuntu-24.04-standard_24.04-2_amd64.tar.zst
 CORES=2
 RAM=2048
+TEMPLATE=local:vztmpl/ubuntu-24.04-standard_24.04-2_amd64.tar.zst
 
-# ==============================================================================
+# -----------------------
 
-# Networking Settings
+# Network Configuration
 
-# ==============================================================================
+# -----------------------
 
 BRIDGE0=vmbr0
 CT_IP0=192.168.1.100/24
+GATEWAY=192.168.1.1
 
 BRIDGE1=vmbr2
 CT_IP1=192.168.20.10/24
 MTU1=1500
 
-GATEWAY=192.168.1.1
+# -----------------------
 
-# ==============================================================================
+# Application Settings
 
-# Mount Points
-
-# ==============================================================================
-
-HOST_MOUNT_SRC=/mnt/media/transmission
-MOUNT_MEDIA_SRC=/mnt/transmission
-
-HOST_MOUNT_DEST=/mnt/media
-MOUNT_MEDIA_DEST=/mnt/media
-
-HOST_STORAGE=/mnt/Truenas/Storage
-MOUNT_STORAGE=/mnt/storage
-
-# ==============================================================================
-
-# System Settings
-
-# ==============================================================================
+# -----------------------
 
 PYTHON_VERSION=3.13
 ROOT_PASSWORD=changeme
 
-# ==============================================================================
+APP_PATH=/opt/jb-filetools
+VENV_PATH=/opt/jb-filetools/venv
+
+# -----------------------
 
 # Template Directory
 
-# ==============================================================================
+# -----------------------
 
 TEMPLATE_DIR=./templates
 
-# ==============================================================================
+# -----------------------
 
-# Mounts Array
+# Mount Points (Host → Container)
 
-# ==============================================================================
+# -----------------------
+
+# Each pair defines one -mp mount in Proxmox (HOST_PATH:CONTAINER_PATH)
 
 MOUNTS=(
-"$HOST_MOUNT_SRC:$MOUNT_MEDIA_SRC"
-"$HOST_MOUNT_DEST:$MOUNT_MEDIA_DEST"
-"$HOST_STORAGE:$MOUNT_STORAGE"
+"/mnt/Truenas/Media/transmission:/mnt/media/transmission"
+"/mnt/Truenas/Media/documentaries:/mnt/media/documentaries"
+"/mnt/Truenas/Media/television:/mnt/media/television"
+"/mnt/Truenas/Storage:/mnt/storage"
 )

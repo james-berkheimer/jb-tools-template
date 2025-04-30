@@ -52,13 +52,13 @@ index=0
 for mount_pair in "${MOUNTS[@]}"; do
   host_path="${mount_pair%%:*}"
   container_path="${mount_pair##*:}"
-  mkdir -p "$host_path"
   if [ -d "$host_path" ]; then
-    pct set $CT_ID -mp${index} "${host_path},mp=${container_path}"
-    index=$((index + 1))
-  else
-    echo "Warning: Host path $host_path does not exist. Skipping mount."
-  fi
+  pct set $CT_ID -mp${index} "${host_path},mp=${container_path}"
+  index=$((index + 1))
+else
+  echo "Warning: Host path $host_path does not exist. Skipping mount."
+fi
+
 done
 
 echo "=== Starting container $CT_ID ==="
@@ -134,10 +134,14 @@ if [ -n "\$SSH_TTY" ]; then
     echo -e "\nInstalled tools: \$TOOLS\n"
   fi
 fi
+
+alias list-tools='\''ls /opt | tr "\n" " " | sed "s/ \$//"; echo'\''
 EOF
 chmod +x /etc/profile.d/jb-tools.sh
 '
 
+echo "=== Disabling pam_systemd.so to prevent SSH login delays ==="
+pct exec $CT_ID -- sed -i 's/^session[[:space:]]\+optional[[:space:]]\+pam_systemd.so/# &/' /etc/pam.d/common-session
 
 echo "=== Container $CT_ID created and configured ==="
 echo "➡ Connect: ssh root@${CT_IP0%%/*}"
