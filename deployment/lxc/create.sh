@@ -66,11 +66,16 @@ pct start $CT_ID
 sleep 5
 
 echo "=== Configuring network in container ==="
+
+# Configure eth0
 pct exec $CT_ID -- ip link set dev eth0 up
 pct exec $CT_ID -- ip addr add "$CT_IP0" dev eth0
 pct exec $CT_ID -- ip route add default via "$GATEWAY"
-pct exec $CT_ID -- bash -c "echo 'nameserver 8.8.8.8' > /etc/resolv.conf"
-pct exec $CT_ID -- bash -c "echo 'nameserver 8.8.4.4' >> /etc/resolv.conf"
+
+# Configure eth1 (10GbE)
+pct exec $CT_ID -- ip link set dev eth1 up
+pct exec $CT_ID -- ip addr add "$CT_IP1" dev eth1
+
 
 echo "=== Installing Python $PYTHON_VERSION and core utilities ==="
 pct exec $CT_ID -- bash -c "
