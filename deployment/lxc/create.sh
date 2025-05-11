@@ -96,6 +96,31 @@ pct exec $CT_ID -- systemctl restart ssh
 echo "=== Setting root password ==="
 pct exec $CT_ID -- bash -c "echo root:$ROOT_PASSWORD | chpasswd"
 
+echo "=== Installing ifupdown and configuring /etc/network/interfaces ==="
+pct exec $CT_ID -- apt install -y ifupdown
+
+pct exec $CT_ID -- bash -c "cat > /etc/network/interfaces << EOF
+# interfaces(5) file used by ifup(8) and ifdown(8)
+
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+    address $CT_IP0
+    netmask 255.255.255.0
+    gateway $GATEWAY
+    dns-nameservers 8.8.8.8
+
+auto eth1
+iface eth1 inet static
+    address $CT_IP1
+    netmask 255.255.255.0
+EOF"
+
+pct exec $CT_ID -- systemctl enable networking
+
+
 echo "=== Setting up system defaults ==="
 pct exec $CT_ID -- bash -c "chmod -x /etc/update-motd.d/*"
 
