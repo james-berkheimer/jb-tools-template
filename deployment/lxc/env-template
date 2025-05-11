@@ -60,8 +60,6 @@ TEMPLATE_DIR=./templates
 # Each pair defines one -mp mount in Proxmox (HOST_PATH:CONTAINER_PATH)
 
 MOUNTS=(
-"/mnt/Truenas/Media/transmission:/mnt/media/transmission"
-"/mnt/Truenas/Media/documentaries:/mnt/media/documentaries"
-"/mnt/Truenas/Media/television:/mnt/media/television"
-"/mnt/Truenas/Storage:/mnt/storage"
+  "/mnt/Truenas/Media:/mnt/media"
+  "/mnt/Truenas/Storage:/mnt/storage"
 )
