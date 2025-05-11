@@ -170,6 +170,11 @@ EOF
 chmod +x /etc/profile.d/jb-tools.sh
 '
 
+# Ensure aliases load in non-login shells
+if ! grep -q "filetools.sh" /root/.bashrc; then
+  echo "source /etc/profile.d/filetools.sh" >> /root/.bashrc
+fi
+
 echo "=== Disabling pam_systemd.so to prevent SSH login delays ==="
 pct exec $CT_ID -- sed -i 's/^session[[:space:]]\+optional[[:space:]]\+pam_systemd.so/# &/' /etc/pam.d/common-session
 
